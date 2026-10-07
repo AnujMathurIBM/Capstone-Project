@@ -203,6 +203,17 @@ data class OrderItemDto(
     @SerializedName("format") val format: String
 )
 
+/** Lightweight summary returned by GET /orders (list). */
+data class OrderSummaryDto(
+    @SerializedName("orderId") val orderId: String,
+    @SerializedName("status") val status: String,
+    @SerializedName("itemCount") val itemCount: Int,
+    @SerializedName("payableAmount") val payableAmount: String,
+    @SerializedName("cancelDeadline") val cancelDeadline: String?,
+    @SerializedName("createdAt") val createdAt: String
+)
+
+/** Full detail returned by GET /orders/{id}, POST /orders, POST /orders/{id}/cancel. */
 data class OrderDto(
     @SerializedName("orderId") val orderId: String,
     @SerializedName("status") val status: String,

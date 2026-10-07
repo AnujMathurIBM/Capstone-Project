@@ -124,12 +124,9 @@ interface ApiService {
     suspend fun clearCart(): Response<Unit>
 
     // ─── Orders ────────────────────────────────────────────────────────────────
+    // Returns a plain List<OrderSummaryDto> — backend does NOT wrap in PagedResponse
     @GET("orders")
-    suspend fun getOrders(
-        @Query("page") page: Int = 0,
-        @Query("size") size: Int = 10,
-        @Query("status") status: String? = null
-    ): Response<PagedResponse<OrderDto>>
+    suspend fun getOrders(): Response<List<OrderSummaryDto>>
 
     @POST("orders")
     suspend fun placeOrder(@Body request: PlaceOrderRequest): Response<OrderDto>

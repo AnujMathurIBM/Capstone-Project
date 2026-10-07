@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.bookworm.app.core.UiState
-import com.bookworm.app.data.remote.dto.OrderDto
+import com.bookworm.app.data.remote.dto.OrderSummaryDto
 import com.bookworm.app.feature.orders.viewmodel.OrderViewModel
 import com.bookworm.app.ui.theme.*
 import java.time.OffsetDateTime
@@ -35,7 +35,7 @@ fun OrderHistoryScreen(
     val buyAgainState  by viewModel.buyAgainState.collectAsStateWithLifecycle()
     val snackbarHost   = remember { SnackbarHostState() }
 
-    var cancelDialogOrder by remember { mutableStateOf<OrderDto?>(null) }
+    var cancelDialogOrder by remember { mutableStateOf<OrderSummaryDto?>(null) }
 
     LaunchedEffect(Unit) { viewModel.loadOrderHistory() }
 
@@ -54,7 +54,7 @@ fun OrderHistoryScreen(
         AlertDialog(
             onDismissRequest = { cancelDialogOrder = null },
             title = { Text("Cancel Order", color = TextPrimary) },
-            text  = { Text("Are you sure you want to cancel order #${order.orderId.take(8)}?", color = TextSecondary) },
+            text  = { Text("Are you sure you want to cancel order #${order.orderId.take(8).uppercase()}?", color = TextSecondary) },
             confirmButton = {
                 TextButton(onClick = { viewModel.cancelOrder(order.orderId); cancelDialogOrder = null }) {
                     Text("Yes, Cancel", color = Error)
@@ -89,7 +89,7 @@ fun OrderHistoryScreen(
                 }
             }
             is UiState.Success -> {
-                if (state.data.content.isEmpty()) {
+                if (state.data.isEmpty()) {
                     Box(Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.Center) {
                         Text("No orders yet.", color = TextSecondary)
                     }
@@ -99,10 +99,10 @@ fun OrderHistoryScreen(
                         verticalArrangement = Arrangement.spacedBy(16.dp),
                         contentPadding = PaddingValues(vertical = 16.dp)
                     ) {
-                        items(state.data.content) { order ->
+                        items(state.data) { order ->
                             OrderCard(
-                                order = order,
-                                onBuyAgain   = { viewModel.buyAgain(order.orderId) },
+                                order         = order,
+                                onBuyAgain    = { viewModel.buyAgain(order.orderId) },
                                 onCancelClick = { cancelDialogOrder = order }
                             )
                         }
@@ -121,7 +121,7 @@ fun OrderHistoryScreen(
 
 @Composable
 private fun OrderCard(
-    order: OrderDto,
+    order: OrderSummaryDto,
     onBuyAgain: () -> Unit,
     onCancelClick: () -> Unit
 ) {
@@ -168,16 +168,8 @@ private fun OrderCard(
             }
         }
 
-        Text("${order.items.size} item(s) · ₹${order.payableAmount}", color = TextSecondary, fontSize = 13.sp)
+        Text("${order.itemCount} item(s) · ₹${order.payableAmount}", color = TextSecondary, fontSize = 13.sp)
         Text(order.createdAt.take(10), color = TextMuted, fontSize = 11.sp)
-
-        // Items preview
-        order.items.take(2).forEach { item ->
-            Text("• ${item.product.title} (${item.quantity}×)", color = TextSecondary, fontSize = 12.sp)
-        }
-        if (order.items.size > 2) {
-            Text("+ ${order.items.size - 2} more", color = TextMuted, fontSize = 11.sp)
-        }
 
         HorizontalDivider(color = SurfaceDark)
 

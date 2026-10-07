@@ -12,6 +12,7 @@ import com.bookworm.app.data.remote.dto.CouponValidateResponse
 import com.bookworm.app.data.remote.dto.GiftCardRedeemRequest
 import com.bookworm.app.data.remote.dto.LoginRequest
 import com.bookworm.app.data.remote.dto.OrderDto
+import com.bookworm.app.data.remote.dto.OrderSummaryDto
 import com.bookworm.app.data.remote.dto.PagedResponse
 import com.bookworm.app.data.remote.dto.PaymentDto
 import com.bookworm.app.data.remote.dto.PaymentRequest
@@ -172,11 +173,7 @@ class TestApiServiceImpl : ApiService {
         TODO("Not yet implemented")
     }
 
-    override suspend fun getOrders(
-        page: Int,
-        size: Int,
-        status: String?
-    ): Response<PagedResponse<OrderDto>> {
+    override suspend fun getOrders(): Response<List<OrderSummaryDto>> {
         TODO("Not yet implemented")
     }
 
